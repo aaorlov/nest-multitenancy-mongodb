@@ -1,0 +1,8 @@
+.idea
+.DS_Store
+
+# Local
+.env
+server/dist
+server/node_modules
+.db

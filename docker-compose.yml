@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  server:
+    container_name: server
+    build:
+      context: ./server
+      target: development
+    volumes:
+      - ./server:/usr/src/app
+    ports:
+      - 8080:8080
+    command: tail -F /none
+    tty: true
+    env_file:
+      - .env
+
+  mongodb:
+    image: mongo:4.0.2
+    container_name: mongodb
+    restart: always
+    volumes:
+      - ./.db/mongodata:/data
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+    ports:
+      - 27017:27017
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo portabl-db:27017 --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+networks:
+  default:
+    external: true
+    name: poc
